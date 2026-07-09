@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -25,6 +26,41 @@ public class JwtUtility {
             .setExpiration(new Date(System.currentTimeMillis()+expiredTime))
             .signWith(getKey())
             .compact();
+    }
+    public boolean validToken(String token,String username){
+        /**
+         * 1-Token expire nahi hona chea-->claims--getExpired -->expiredTime > currentTime -->token expired ! 
+         * 2-token k username and receive username same hona chea 
+         */
+        boolean isExpired=isExpired(token);
+        String tokenUsername=getUserName(token);
+
+       return (!isExpired && tokenUsername.equals(username));
+
+    }
+    public String getUserName(String token){
+        //extract payload 
+        Claims claims=getClaims(token);
+        String username=claims.getSubject();
+
+        return username;
+
+    }
+    public boolean isExpired(String token){
+        Claims claims=getClaims(token);
+        Date tokenDate=claims.getExpiration();
+
+        Date currentDate=new Date(System.currentTimeMillis());
+        return currentDate.after(tokenDate);
+    }
+    //expire -->token date >>> current date -->true 
+    // token date << current date -->false
+    public Claims getClaims(String token){
+       return Jwts.parserBuilder()
+                    .setSigningKey(getKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
     }
     public Key getKey(){
         byte[] keyBytes=Decoders.BASE64URL.decode(key);

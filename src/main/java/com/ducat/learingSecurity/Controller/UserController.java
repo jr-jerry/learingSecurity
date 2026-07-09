@@ -3,6 +3,7 @@ package com.ducat.learingSecurity.Controller;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,8 @@ import io.jsonwebtoken.security.Keys;
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
+    // @Value("${DB_URL}")
+    // private String jdbcUrl;
     private final UserEntityService userEntityService;
     private final JwtUtility jwtUtility;
     
